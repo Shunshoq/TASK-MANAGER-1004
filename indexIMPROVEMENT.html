@@ -22,11 +22,9 @@
         background-color: #121212;
         color: #fff;
         line-height: 1.6;
-        height: 100%;
-        margin: 0;
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         text-align: center;
       }
 
@@ -36,7 +34,6 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 100vh;
         padding: 20px;
         position: relative;
         flex-grow: 1;
@@ -44,7 +41,7 @@
 
       /* Background Video styling */
       video {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -74,21 +71,25 @@
         margin-bottom: 30px;
         width: 80%;
         max-width: 600px;
-        text-align: center; /* Center the text horizontally */
-        display: flex;
-        justify-content: center; /* Center the content horizontally */
-        align-items: center; /* Center the content vertically */
-        height: 100px; /* Set a height to center the text vertically */
-        flex-direction: column;
+        text-align: center;
       }
 
       .task-item {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: rgba(30, 30, 30, 0.7);
+        border-radius: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
       }
 
       .task-text {
-        display: inline;
+        flex-grow: 1;
+        text-align: left;
         margin-right: 10px;
+        word-break: break-word;
       }
 
       .completed {
@@ -96,22 +97,37 @@
         color: #aaa;
       }
 
+      .task-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
       .remove-task {
         color: #ff6347;
         cursor: pointer;
+        white-space: nowrap;
       }
 
       .complete-task {
         color: #48c774;
         cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .timer {
+        color: #aaa;
+        font-size: 0.9rem;
+        white-space: nowrap;
       }
 
       /* Priority Tag styling */
       .priority-tag {
         display: inline-block;
-        margin-left: 10px;
         padding: 2px 6px;
         border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 10px;
       }
 
       .priority-tag.low {
@@ -121,7 +137,7 @@
 
       .priority-tag.medium {
         background-color: #ffc107;
-        color: white;
+        color: #333;
       }
 
       .priority-tag.high {
@@ -132,8 +148,34 @@
       /* Add Task Section */
       .add-task-section {
         margin-top: 20px;
-        font-size: 1rem;
-        color: #ccc;
+        width: 80%;
+        max-width: 600px;
+      }
+
+      .task-input-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      #task-input {
+        padding: 10px;
+        flex-grow: 1;
+        min-width: 200px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid #444;
+        color: white;
+        border-radius: 4px;
+      }
+
+      #priority-input {
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid #444;
+        color: white;
+        border-radius: 4px;
       }
 
       .add-task-button {
@@ -141,6 +183,7 @@
         color: white;
         padding: 10px 20px;
         border: none;
+        border-radius: 4px;
         cursor: pointer;
         font-size: 1.1rem;
         transition: background-color 0.3s;
@@ -156,10 +199,6 @@
         color: #aaa;
         opacity: 0;
         animation: fadeIn 1s forwards 2.5s;
-        margin-top: 50px;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
         padding: 20px 0;
         text-align: center;
       }
@@ -207,10 +246,22 @@
 
         .task-list {
           font-size: 0.9rem;
+          width: 95%;
         }
 
         .add-task-button {
           font-size: 0.9rem;
+        }
+
+        .task-item {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .task-actions {
+          width: 100%;
+          justify-content: flex-end;
+          margin-top: 5px;
         }
       }
     </style>
@@ -218,8 +269,9 @@
   <body>
     <!-- Main Container -->
     <div class="container">
-      <video autoplay loop muted>
+      <video autoplay loop muted playsinline>
         <source src="assets/VIDEOBACKGROUND2.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
       </video>
 
       <!-- Task Manager Header -->
@@ -232,22 +284,19 @@
 
       <!-- Add Task Section -->
       <div class="add-task-section">
-        <input
-          type="text"
-          id="task-input"
-          placeholder="Enter a task..."
-          style="
-            padding: 10px;
-            width: 80%;
-            max-width: 400px;
-            margin-bottom: 20px;
-          "
-        />
-        <select id="priority-input" style="padding: 10px;">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
+        <div class="task-input-container">
+          <input
+            type="text"
+            id="task-input"
+            placeholder="Enter a task..."
+            aria-label="Task input"
+          />
+          <select id="priority-input" aria-label="Task priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
         <button class="add-task-button" id="add-task-btn">Add Task</button>
       </div>
     </div>
@@ -256,108 +305,187 @@
     <div class="footer-section">
       <p>Designed by Sunny <3</p>
       <div>
-        <a href="https://github.com/Shunshoq" target="_blank">github</a>
+        <a href="https://github.com/Shunshoq" target="_blank" rel="noopener noreferrer">github</a>
         <a
           href="https://open.spotify.com/user/31ny7eyosv5abxoleloanojbl2em"
           target="_blank"
+          rel="noopener noreferrer"
           >spotify</a
         >
-        <a href="https://steamcommunity.com/id/bigbootyah/" target="_blank"
+        <a href="https://steamcommunity.com/id/bigbootyah/" target="_blank" rel="noopener noreferrer"
           >steam</a
         >
       </div>
     </div>
 
     <script>
-      let tasks = [];
+      document.addEventListener('DOMContentLoaded', () => {
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        const taskInput = document.getElementById('task-input');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const taskList = document.getElementById('task-list');
+        const intervals = {};
 
-      // Function to display tasks
-      function displayTasks() {
-        const taskList = document.getElementById("task-list");
-        taskList.innerHTML = "";
+        // Function to save tasks to localStorage
+        function saveTasks() {
+          localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
 
-        if (tasks.length === 0) {
-          taskList.innerHTML = "No tasks yet. Add your first task.";
-        } else {
-          // Sort tasks by priority (high > medium > low)
+        // Function to display tasks
+        function displayTasks() {
+          taskList.innerHTML = '';
+
+          if (tasks.length === 0) {
+            taskList.innerHTML = 'No tasks yet. Add your first task.';
+            return;
+          }
+
+          // Sort tasks by priority (high > medium > low) and completion status
           tasks.sort((a, b) => {
             const priorities = { high: 3, medium: 2, low: 1 };
+            if (a.completed !== b.completed) {
+              return a.completed ? 1 : -1;
+            }
             return priorities[b.priority] - priorities[a.priority];
           });
 
           tasks.forEach((task, index) => {
-            const taskItem = document.createElement("div");
-            taskItem.classList.add("task-item");
-            taskItem.innerHTML = `
-              <span class="task-text ${task.completed ? "completed" : ""}">${
-              task.text
-            }</span>
-            <span class="remove-task" onclick="removeTask(${index})">[Remove]</span>
-            <span class="complete-task" onclick="toggleComplete(${index})">${
-              task.completed ? "[Undo]" : "[Complete]"
-            }</span>
-            <span class="priority-tag ${task.priority}">${task.priority}</span>
-          `;
+            const taskItem = document.createElement('div');
+            taskItem.classList.add('task-item');
+            
+            const taskText = document.createElement('span');
+            taskText.classList.add('task-text');
+            if (task.completed) taskText.classList.add('completed');
+            taskText.textContent = task.text;
+            
+            const priorityTag = document.createElement('span');
+            priorityTag.classList.add('priority-tag', task.priority);
+            priorityTag.textContent = task.priority;
+            
+            const taskActions = document.createElement('div');
+            taskActions.classList.add('task-actions');
+            
+            const completeBtn = document.createElement('span');
+            completeBtn.classList.add('complete-task');
+            completeBtn.textContent = task.completed ? '[Undo]' : '[Complete]';
+            completeBtn.addEventListener('click', () => toggleComplete(index));
+            
+            const removeBtn = document.createElement('span');
+            removeBtn.classList.add('remove-task');
+            removeBtn.textContent = '[Remove]';
+            removeBtn.addEventListener('click', () => removeTask(index));
+            
+            const timerDisplay = document.createElement('span');
+            timerDisplay.classList.add('timer');
+            
+            if (!task.completed && task.startTime) {
+              const elapsed = Math.floor((Date.now() - task.startTime) / 1000);
+              const minutes = Math.floor(elapsed / 60);
+              const seconds = elapsed % 60;
+              timerDisplay.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            taskActions.append(completeBtn, removeBtn, timerDisplay);
+            taskItem.append(taskText, priorityTag, taskActions);
             taskList.appendChild(taskItem);
 
-            // If task is in progress, start the timer
-            if (task.completed === false && task.timerStarted === false) {
+            // Start timer if task is in progress and not already started
+            if (!task.completed && !task.startTime) {
+              tasks[index].startTime = Date.now();
               startTimer(index);
-              tasks[index].timerStarted = true;
+              saveTasks();
             }
           });
         }
-      }
 
-      // Add Task Functionality
-      document.getElementById("add-task-btn").addEventListener("click", () => {
-        const taskInput = document.getElementById("task-input");
-        const taskText = taskInput.value.trim();
-        const priority = document.getElementById("priority-input").value;
+        // Add Task Functionality
+        function addTask() {
+          const taskText = taskInput.value.trim();
+          const priority = document.getElementById('priority-input').value;
 
-        if (taskText !== "") {
-          tasks.push({ text: taskText, completed: false, priority, timerStarted: false });
-          taskInput.value = "";
-          displayTasks();
-        }
-      });
-
-      // Toggle task completion
-      function toggleComplete(index) {
-        tasks[index].completed = !tasks[index].completed;
-        displayTasks();
-      }
-
-      // Remove task functionality with confirmation
-      function removeTask(index) {
-        if (confirm("Are you sure you want to delete this task?")) {
-          tasks.splice(index, 1);
-          displayTasks();
-        }
-      }
-
-      // Timer Functionality
-      function startTimer(index) {
-        let seconds = 0;
-        const taskItem = document.querySelectorAll(".task-item")[index];
-        const timerDisplay = document.createElement("span");
-        timerDisplay.classList.add("timer");
-        taskItem.appendChild(timerDisplay);
-
-        const interval = setInterval(() => {
-          if (tasks[index].completed) {
-            clearInterval(interval);
-          } else {
-            seconds++;
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            timerDisplay.innerHTML = `Time: ${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+          if (taskText !== '') {
+            tasks.push({
+              text: taskText,
+              completed: false,
+              priority,
+              startTime: null
+            });
+            taskInput.value = '';
+            saveTasks();
+            displayTasks();
           }
-        }, 1000);
-      }
+        }
 
-      // Initial Display
-      displayTasks();
+        // Event listeners
+        addTaskBtn.addEventListener('click', addTask);
+        
+        taskInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            addTask();
+          }
+        });
+
+        // Toggle task completion
+        function toggleComplete(index) {
+          tasks[index].completed = !tasks[index].completed;
+          
+          if (tasks[index].completed) {
+            // Task is being marked as completed - stop timer
+            if (intervals[index]) {
+              clearInterval(intervals[index]);
+              delete intervals[index];
+            }
+          } else {
+            // Task is being unmarked - start timer
+            tasks[index].startTime = Date.now();
+            startTimer(index);
+          }
+          
+          saveTasks();
+          displayTasks();
+        }
+
+        // Remove task functionality with confirmation
+        function removeTask(index) {
+          if (confirm('Are you sure you want to delete this task?')) {
+            if (intervals[index]) {
+              clearInterval(intervals[index]);
+              delete intervals[index];
+            }
+            tasks.splice(index, 1);
+            saveTasks();
+            displayTasks();
+          }
+        }
+
+        // Timer Functionality
+        function startTimer(index) {
+          if (intervals[index]) {
+            clearInterval(intervals[index]);
+          }
+          
+          intervals[index] = setInterval(() => {
+            if (tasks[index] && tasks[index].startTime && !tasks[index].completed) {
+              const elapsed = Math.floor((Date.now() - tasks[index].startTime) / 1000);
+              const minutes = Math.floor(elapsed / 60);
+              const seconds = elapsed % 60;
+              
+              const timerElements = document.querySelectorAll('.timer');
+              if (timerElements[index]) {
+                timerElements[index].textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+              }
+            }
+          }, 1000);
+        }
+
+        // Initialize the app
+        displayTasks();
+        
+        // Clean up intervals when page is unloaded
+        window.addEventListener('beforeunload', () => {
+          Object.values(intervals).forEach(interval => clearInterval(interval));
+        });
+      });
     </script>
   </body>
 </html>
